@@ -5,6 +5,7 @@ import time
 
 import usb.core
 import usb.util
+import usb.backend.libusb1
 
 crc = None
 try:
@@ -58,6 +59,8 @@ def setup_crc():
 def main():
     # Find our device
     is_fnb58_or_fnb48s = False
+    backend = usb.backend.libusb1.get_backend(find_library=lambda x: "/opt/homebrew/Cellar/libusb/1.0.26/lib/libusb-1.0.0.dylib")
+    devices = usb.core.find(find_all=True)
     dev = usb.core.find(idVendor=VID, idProduct=PID_FNB48)
     if dev is None:
         dev = usb.core.find(idVendor=VID, idProduct=PID_C1)
@@ -71,6 +74,8 @@ def main():
             is_fnb58_or_fnb48s = True
 
     assert dev, "Device not found"
+
+    #print("Found: ", dev, file=sys.stderr)
 
     if False:
         print(dev, file=sys.stderr)
@@ -101,7 +106,7 @@ def main():
     # set the active configuration. With no arguments, the first
     # configuration will be the active one
 
-    if False:
+    if True:
         for cfg in dev:
             print("cfg", cfg.bConfigurationValue, file=sys.stderr)
             for intf in cfg:
